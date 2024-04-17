@@ -1,0 +1,49 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .register-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <button class="register-btn" onclick="redirectToRegisterPage()">Регистрация</button>
+    <div class="container">
+        <h2>Авторизация</h2>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="login_username">Имя пользователя</label>
+                <input type="text" id="login_username" name="login_username" required>
+            </div>
+            <div class="form-group">
+                <label for="login_password">Пароль</label>
+                <input type="password" id="login_password" name="login_password" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Войти">
+            </div>
+        </form>
+    </div>
+</body>
+    <script>
+        function redirectToRegisterPage() {
+            window.location.href = '/';
+        }
+    </script>
+</html>
