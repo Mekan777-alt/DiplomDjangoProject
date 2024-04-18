@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class UserType(Enum):
+class Groups(Enum):
     DECANAT = 'DECANAT'
     TEACHER = 'TEACHER'
     STUDENT = 'STUDENT'
