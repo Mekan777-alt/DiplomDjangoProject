@@ -26,14 +26,25 @@
     <button class="register-btn" onclick="redirectToRegisterPage()">Регистрация</button>
     <div class="container">
         <h2>Авторизация</h2>
-        <form action="/login" method="post">
+        <form action="{% url 'authentication:login' %}" method="post">
+        {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             <div class="form-group">
                 <label for="login_username">Электронная почта</label>
-                <input type="text" id="login_username" name="login_username" required>
+                <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
                 <label for="login_password">Пароль</label>
-                <input type="password" id="login_password" name="login_password" required>
+                <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
                 <input type="submit" value="Войти">

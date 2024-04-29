@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание занятий</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -75,33 +77,54 @@
     .content {
         margin-left: 220px;
     }
+    .logout-button {
+    background-color: #337ab7;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    }
+
+    .logout-button:hover {
+    background-color: #337ab7; 
+    }
 </style>
 </head>
 <body>
-    <div class="group-name">Туризм и гостеприимство: предоставление туроператорских и турагентских услуг 3 курса</div>
-    <table class="schedule-table">
-        <thead>
-            <tr>
-                <th>День недели</th>
-                <th>№</th>
-                <th>Время</th>
-                <th>Предмет</th>
-                <th>Преподаватель</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Здесь можно добавить строки с расписанием для каждой группы -->
-            <tr>
-                <td>Понедельник</td>
-                <td>9:00 - 11:00</td>
-                <td>Мировая география</td>
-                <td>Иванова А.С.</td>
-            </tr>
+    <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
+    {% for group, schedule in schedule_data.items %}
+        <div class="group-name">{{ group }}</div>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>День недели</th>
+                    <th>№</th>
+                    <th>Время занятий</th>
+                    <th>Наименование дисциплин</th>
+                    <th>Вид занятий</th>
+                    <th>И.О преподавателя</th>
+                    <th>Место проведение</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entry in schedule %}
+                <tr>
+                    <td>{{ entry.day_of_week }}</td>
+                    <td>{{ entry.number }}</td>
+                    <td>{{ entry.time_from }} - {{ entry.time_to }}</td>
+                    <td>{{ entry.name_of_discipline }}</td>
+                    <td>{{ entry.type_of_lesson }}</td>
+                    <td>{{ entry.teacher }}</td>
+                    <td>{{ entry.place_of_perfomance }}</td>
+                </tr>
+            {% endfor %}
             <!-- Пример строки с расписанием -->
-        </tbody>
-    </table>
-    
+            </tbody>
+        </table>
+    {% endfor %}
+
     <!-- Аналогично для других групп -->
-    
+
 </body>
 </html>
