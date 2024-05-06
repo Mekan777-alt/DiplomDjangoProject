@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from authentication.forms import UserCreationForm
@@ -6,6 +7,12 @@ from django.contrib.auth import authenticate, login
 
 
 def register(request):
+    group = Group.objects.all()
+    form = UserCreationForm()
+    context = {
+        'form': form,
+        'group': group
+    }
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -14,10 +21,9 @@ def register(request):
             return redirect(reverse('authentication:login'))
         else:
             messages.error(request, 'Ошибка при регистрации. Пожалуйста, исправьте ошибки в форме.')
-            return render(request, 'auth/register.html', {"form": form})
+            return render(request, 'auth/register.html', context)
     else:
-        form = UserCreationForm()
-    return render(request, 'auth/register.html', {'form': form})
+        return render(request, 'auth/register.html', context)
 
 
 def login_view(request):

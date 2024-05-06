@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class Groups(Enum):
-    DECANAT = 'DECANAT'
-    TEACHER = 'TEACHER'
-    STUDENT = 'STUDENT'
+    DECANAT = 'Деканат'
+    TEACHER = 'Преподователь'
+    STUDENT = 'Студент'
