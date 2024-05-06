@@ -1,16 +1,15 @@
 from django import forms
 from authentication.models import User
 from django.core.exceptions import ValidationError
-from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 
 
 class UserCreationForm(forms.Form):
-    first_name = forms.CharField(label='first_name', min_length=5, max_length=150)
-    last_name = forms.CharField(label='last_name', min_length=5, max_length=150)
-    email = forms.EmailField(label='email')
-    password1 = forms.CharField(label='password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    first_name = forms.CharField(label='Имя', min_length=5, max_length=150)
+    last_name = forms.CharField(label='Фамилия', min_length=5, max_length=150)
+    email = forms.EmailField(label='Электронная почта')
+    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Подтвердите пароль', widget=forms.PasswordInput)
 
     def clean_password1(self):
         password1 = self.cleaned_data.get("password1")

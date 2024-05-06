@@ -1,29 +1,28 @@
-from django.contrib.auth.models import Group
+from schedule.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from authentication.forms import UserCreationForm
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
+from django.db import IntegrityError
 
 
 def register(request):
-    group = Group.objects.all()
-    form = UserCreationForm()
-    context = {
-        'form': form,
-        'group': group
-    }
+    groups = Group.objects.all()
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Регистрация прошла успешно. Теперь вы можете войти!')
-            return redirect(reverse('authentication:login'))
+            try:
+                form.save()
+                messages.success(request, 'Регистрация прошла успешно. Теперь вы можете войти!')
+                return redirect(reverse('authentication:login'))
+            except IntegrityError as e:
+                messages.error(request, "Электронная почта уже зарегистрирована.")
         else:
             messages.error(request, 'Ошибка при регистрации. Пожалуйста, исправьте ошибки в форме.')
-            return render(request, 'auth/register.html', context)
     else:
-        return render(request, 'auth/register.html', context)
+        form = UserCreationForm()
+    return render(request, 'auth/register.html', {'form': form, 'groups': groups})
 
 
 def login_view(request):
