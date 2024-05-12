@@ -14,7 +14,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         if 'role' not in extra_fields:
-            extra_fields['role'] = Groups.DECANAT.value
+            extra_fields['role'] = Groups.DECANAT.name
 
         return self.create_user(email, password, **extra_fields)
 
@@ -23,7 +23,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Users must have an email address.')
 
         email = self.normalize_email(email)
-        role_value = role.upper() if isinstance(role, str) else role.value
+        role_value = role.name if isinstance(role, Groups) else role
         user = self.model(email=email, role=role_value, **extra_fields)
         validate_password(password)
         user.set_password(password)

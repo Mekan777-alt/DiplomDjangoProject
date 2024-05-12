@@ -27,5 +27,6 @@ class UserCreationForm(forms.Form):
             password=self.cleaned_data['password1'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],
+            role='STUDENT'
         )
         return user

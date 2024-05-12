@@ -14,13 +14,6 @@
         padding: 20px;
     }
 
-    .header {
-        background-color: #333;
-        color: #fff;
-        padding: 20px;
-        text-align: center;
-    }
-
     .schedule-table {
         width: 100%;
         border-collapse: collapse;
@@ -57,14 +50,6 @@
         color: #337ab7;
     }
 
-    .sidebar {
-        background-color: #333;
-        color: #fff;
-        padding: 20px;
-        width: 200px;
-        float: left;
-        margin-right: 20px;
-    }
 
     .sidebar h3 {
         margin-top: 0;
@@ -74,9 +59,6 @@
         margin-bottom: 0;
     }
 
-    .content {
-        margin-left: 220px;
-    }
     .logout-button {
     background-color: #337ab7;
     color: #fff;
@@ -103,7 +85,7 @@
                     <th>Время занятий</th>
                     <th>Наименование дисциплин</th>
                     <th>Вид занятий</th>
-                    <th>И.О преподавателя</th>
+                    <th>Ф.И.О преподавателя</th>
                     <th>Место проведение</th>
                 </tr>
             </thead>
@@ -113,18 +95,15 @@
                     <td>{{ entry.day_of_week }}</td>
                     <td>{{ entry.number }}</td>
                     <td>{{ entry.time_from }} - {{ entry.time_to }}</td>
-                    <td>{{ entry.name_of_discipline }}</td>
+                    <td>{{ entry.subject }}</td>
                     <td>{{ entry.type_of_lesson }}</td>
                     <td>{{ entry.teacher }}</td>
                     <td>{{ entry.place_of_perfomance }}</td>
                 </tr>
             {% endfor %}
-            <!-- Пример строки с расписанием -->
             </tbody>
         </table>
     {% endfor %}
-
-    <!-- Аналогично для других групп -->
 
 </body>
 </html>

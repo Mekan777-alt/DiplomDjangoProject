@@ -1,4 +1,11 @@
 from django.db import models
+from authentication.models import User
+from authentication.enum import Groups
+
+
+class TeacherManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(groups__name=Groups.TEACHER.name)
 
 
 class Group(models.Model):
@@ -33,14 +40,14 @@ class Schedule(models.Model):
     number = models.IntegerField("Номер пары")
     time_from = models.TimeField("Начало пары")
     time_to = models.TimeField("Конец пары")
-    name_of_discipline = models.CharField('Наименование дисциплины', max_length=150)
     type_of_lesson = models.CharField('Вид занятий', max_length=150)
-    teacher = models.CharField('Преподаватель', max_length=150)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Преподаватель',
+                                limit_choices_to={'role': Groups.TEACHER.name})
     place_of_perfomance = models.CharField('Место проведение', max_length=150)
 
     def __str__(self):
 
-        return f"{self.type_of_lesson} - {self.name_of_discipline} - {self.teacher}"
+        return f"{self.type_of_lesson} - {self.subject} - {self.teacher}"
 
     class Meta:
         verbose_name_plural = 'Расписание студентов'
