@@ -55,3 +55,18 @@ body {
 .form-group input[type="submit"]:hover {
     background-color: #0056b3;
 }
+
+#grading-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#grading-table th, #grading-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+#grading-table th {
+  background-color: #f0f0f0;
+}

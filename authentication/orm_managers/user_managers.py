@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.password_validation import validate_password
+from authentication.enum import Groups
 
 
 class UserManager(BaseUserManager):
@@ -12,14 +13,18 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
+        if 'role' not in extra_fields:
+            extra_fields['role'] = Groups.DECANAT.value
+
         return self.create_user(email, password, **extra_fields)
 
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, password, role, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address.')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        role_value = role.upper() if isinstance(role, str) else role.value
+        user = self.model(email=email, role=role_value, **extra_fields)
         validate_password(password)
         user.set_password(password)
         user.save()

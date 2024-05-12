@@ -1,4 +1,5 @@
 from django.db import models
+from authentication.enum import Groups
 from django.contrib.auth.models import AbstractUser
 from authentication.orm_managers.user_managers import UserManager
 
@@ -7,6 +8,8 @@ class User(AbstractUser):
     objects = UserManager()
 
     email = models.EmailField('Электронная почта', unique=True)
+    role = models.CharField('Роль', max_length=50, choices=[(tag.name, tag.value) for tag in Groups],
+                            default=Groups.STUDENT.value)
 
     REQUIRED_FIELDS = ['first_name', 'last_name']
     USERNAME_FIELD = 'email'
