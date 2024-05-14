@@ -1,4 +1,4 @@
-from schedule.models import Group
+from authentication.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from authentication.forms import UserCreationForm
@@ -8,7 +8,6 @@ from django.db import IntegrityError
 
 
 def register(request):
-    groups = Group.objects.all()
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -22,7 +21,7 @@ def register(request):
             messages.error(request, 'Ошибка при регистрации. Пожалуйста, исправьте ошибки в форме.')
     else:
         form = UserCreationForm()
-    return render(request, 'auth/register.html', {'form': form, 'groups': groups})
+    return render(request, 'auth/register.html', {'form': form})
 
 
 def login_view(request):

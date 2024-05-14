@@ -7,18 +7,6 @@
     <title>Registration Form</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
      <style>
-        .login-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -68,6 +56,17 @@
                 {% endif %}
             </div>
             <div class="form-group">
+                <label for="id_group">Группа:</label>
+                {{ form.group }}
+                {% if form.group.errors %}
+                    <ul>
+                        {% for error in form.group.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="form-group">
                 <label for="id_password1">{{ form.password1.label }}</label>
                 {{ form.password1 }}
                 {% if form.password1.errors %}
@@ -95,7 +94,7 @@
             <div id="error-message"></div>
         </form>
     </div>
-</body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function redirectToLoginPage() {
             window.location.href = '{% url "authentication:login" %}';
@@ -122,4 +121,5 @@
         });
     });
     </script>
+</body>
 </html>

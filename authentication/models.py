@@ -4,6 +4,13 @@ from django.contrib.auth.models import AbstractUser
 from authentication.orm_managers.user_managers import UserManager
 
 
+class Group(models.Model):
+    name = models.CharField("Название группы", max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
     objects = UserManager()
 

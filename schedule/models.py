@@ -1,19 +1,11 @@
 from django.db import models
-from authentication.models import User
+from authentication.models import User, Group
 from authentication.enum import Groups
 
 
 class TeacherManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(groups__name=Groups.TEACHER.name)
-
-
-class Group(models.Model):
-    name = models.CharField("Название группы", max_length=100)
-
-    def __str__(self):
-
-        return self.name
 
     class Meta:
 

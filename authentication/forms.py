@@ -2,6 +2,7 @@ from django import forms
 from authentication.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from authentication.models import Group
 
 
 class UserCreationForm(forms.Form):
@@ -10,6 +11,7 @@ class UserCreationForm(forms.Form):
     email = forms.EmailField(label='Электронная почта')
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Подтвердите пароль', widget=forms.PasswordInput)
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False, label='Группа')
 
     def clean_password1(self):
         password1 = self.cleaned_data.get("password1")

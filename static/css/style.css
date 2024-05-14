@@ -1,25 +1,30 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+body, html {
+    height: 100%;
     margin: 0;
-    padding: 0;
+}
+
+body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    flex-direction: column;
 }
 
 .container {
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 300px;
+    border-radius: 5px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
 }
 
-.container h2 {
-    margin-bottom: 20px;
+h2 {
     text-align: center;
+    color: #333;
 }
 
 .form-group {
@@ -28,17 +33,19 @@ body {
 
 .form-group label {
     display: block;
+    margin-bottom: 10px;
     font-weight: bold;
-    margin-bottom: 5px;
 }
 
 .form-group input[type="text"],
-.form-group input[type="password"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select {
+    width: calc(100% - 2px); /* Вычесть общий внутренний отступ из ширины */
+    padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Убедитесь, что padding и border включены в ширину */
 }
 
 .form-group input[type="submit"] {
@@ -47,26 +54,44 @@ body {
     border: none;
     border-radius: 4px;
     background-color: #007bff;
-    color: #fff;
+    color: white;
     cursor: pointer;
     font-size: 16px;
 }
 
 .form-group input[type="submit"]:hover {
-    background-color: #0056b3;
+    background-color: #007bff;
 }
 
-#grading-table {
-  border-collapse: collapse;
-  width: 100%;
+.login-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;;
 }
 
-#grading-table th, #grading-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
+.login-btn:hover {
+    background-color: #286090;
 }
 
-#grading-table th {
-  background-color: #f0f0f0;
+ul {
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    color: red;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
 }
