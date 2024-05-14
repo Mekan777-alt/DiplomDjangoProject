@@ -3,6 +3,7 @@ from authentication.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from authentication.models import Group
+from django.shortcuts import get_object_or_404
 
 
 class UserCreationForm(forms.Form):
@@ -24,11 +25,14 @@ class UserCreationForm(forms.Form):
         return password1
 
     def save(self, commit=True):
+        group_name = self.cleaned_data['group']
+        group = Group.objects.get(name=group_name)
         user = User.objects.create_user(
             email=self.cleaned_data['email'],
             password=self.cleaned_data['password1'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],
+            student_group=group,
             role='STUDENT'
         )
         return user

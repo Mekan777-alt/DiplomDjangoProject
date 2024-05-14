@@ -76,7 +76,7 @@
 <body>
     <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
     {% for group, schedule in schedule_data.items %}
-        <div class="group-name">{{ group }}</div>
+        <div class="group-name">Группа {{ group }}</div>
         <table class="schedule-table">
             <thead>
                 <tr>

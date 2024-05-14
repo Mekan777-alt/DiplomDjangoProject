@@ -41,11 +41,11 @@ h2 {
 .form-group input[type="email"],
 .form-group input[type="password"],
 .form-group select {
-    width: calc(100% - 2px); /* Вычесть общий внутренний отступ из ширины */
+    width: calc(100% - 0px);
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box; /* Убедитесь, что padding и border включены в ширину */
+    box-sizing: border-box;
 }
 
 .form-group input[type="submit"] {

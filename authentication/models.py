@@ -24,6 +24,7 @@ class User(AbstractUser):
     first_name = models.CharField('Имя', max_length=255)
     last_name = models.CharField('Фамилия', max_length=255)
     patronymic = models.CharField('Отчество', max_length=255)
+    student_group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа', null=True)
     username = None
 
     class Meta:
