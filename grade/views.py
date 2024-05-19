@@ -1,14 +1,20 @@
 from django.shortcuts import render
-from authentication.models import User
+from authentication.models import User, Group
+
+from django.shortcuts import render, redirect
+from .models import Group, Student, Grade
+from .forms import GradeForm
 
 
-def grading_view(request):
-    students = User.objects.filter()
+def grade_view(request):
+    groups = Group.objects.all()
     if request.method == 'POST':
-        form = GradingForm(request.POST)
+        form = GradeForm(request.POST)
         if form.is_valid():
-            # Process the grades here
-            pass
+            form.save()
+            return redirect('grade_view')
     else:
-        form = GradingForm()
-    return render(request, 'grading.html', {'students': students, 'form': form})
+        form = GradeForm()
+
+    return render(request, 'grades/grade_view.html', {'form': form, 'groups': groups})
+

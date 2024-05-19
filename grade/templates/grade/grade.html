@@ -1,31 +1,125 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Grading System</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проставление оценок</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+
+
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #dddddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+select, input[type="number"], input[type="radio"] {
+    width: 100%;
+    padding: 8px;
+}
+
+input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+    </style>
 </head>
 <body>
-	<table id="grading-table">
-  <tr>
-    <th>ФИО студента</th>
-    <th>Оценка</th>
-  </tr>
-  {% for student in students %}
-  <tr>
-    <td>{{ student.name }}</td>
-    <td>
-      <select name="grade">
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="F">F</option>
-      </select>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+    <div class="container">
+        <h1>Проставление оценок</h1>
+        <form method="post" action="{% url 'set_grades' %}">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <th>Группа</th>
+                    <th>Предмет</th>
+                    <th>Тип оценки</th>
+                    <th>Студент</th>
+                    <th>Оценка</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select id="group" name="group" required>
+                            {% for group in groups %}
+                                <option value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select id="subject" name="subject" required>
+                            {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="radio" id="session" name="grade_type" value="session" required>
+                        <label for="session">Сессия</label>
+                        <input type="radio" id="lesson" name="grade_type" value="lesson" required>
+                        <label for="lesson">Урок</label>
+                    </td>
+                    <td>
+                        <select id="student" name="student" required>
+                            {% for student in students %}
+                                <option value="{{ student.id }}">{{ student.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><input type="number" id="grade" name="grade" min="1" max="5" required></td>
+                </tr>
+            </table>
+
+            <button type="submit">Проставить оценку</button>
+        </form>
+    </div>
 </body>
 </html>
