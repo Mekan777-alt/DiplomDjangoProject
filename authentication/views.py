@@ -1,10 +1,10 @@
-from authentication.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from authentication.forms import UserCreationForm
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
+from authentication.enum import Groups
 
 
 def register(request):
@@ -31,7 +31,10 @@ def login_view(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect('schedule:schedule')
+            if user.role == Groups.TEACHER.name:  # Проверка роли преподавателя
+                return redirect(reverse('journal:journal'))
+            else:
+                return redirect(reverse('schedule:schedule'))  # Перенаправление на расписание для студентов
         else:
             messages.error(request, "Неверный адрес электронной почты или пароль")
     return render(request, 'auth/login.html')

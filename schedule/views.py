@@ -1,20 +1,24 @@
 from django.shortcuts import render
 from schedule.models import Schedule
-from authentication.enum import Groups
 from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def schedule(request):
+def schedule_view(request):
+    schedule_data = {}
+    groups = Schedule.objects.values_list('group__name', flat=True).distinct()
+    days_of_week = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    day_names = dict(Schedule.DAYS_OF_WEEK)
 
-    if request.user.role == Groups.STUDENT.name:
-        group = request.user.student_group
+    for group in groups:
+        group_schedule = Schedule.objects.filter(group__name=group).order_by('day_of_week', 'number')
+        schedule_data[group] = {}
+        for day in days_of_week:
+            schedule_data[group][day] = group_schedule.filter(day_of_week=day)
 
-        schedule_data = {group.name: Schedule.objects.filter(group=group)}
+    context = {
+        'schedule_data': schedule_data,
+        'day_names': day_names,
+    }
 
-        days_of_week = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
-
-        return render(request, 'schedule/schedule.html', {'schedule_data': schedule_data, 'days_of_week': days_of_week})
-
-    else:
-        return render(request, 'auth/login.html')
+    return render(request, 'schedule/schedule.html', context)

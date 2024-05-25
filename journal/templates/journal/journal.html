@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Журнал</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Журнал</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ group_form.group.label_tag }}
+                {{ group_form.group }}
+            </div>
+            <div class="form-group">
+                {{ group_form.subject.label_tag }}
+                {{ group_form.subject }}
+            </div>
+            <button type="submit" name="group_submit" class="btn btn-primary">Выбрать группу и предмет</button>
+        </form>
+
+        {% if students and lessons %}
+        <h2>Оценки</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ grade_form.student.label_tag }}
+                {{ grade_form.student }}
+            </div>
+            <div class="form-group">
+                {{ grade_form.lesson.label_tag }}
+                {{ grade_form.lesson }}
+            </div>
+            <div class="form-group">
+                {{ grade_form.score.label_tag }}
+                {{ grade_form.score }}
+            </div>
+            <button type="submit" name="grade_submit" class="btn btn-success">Выставить оценку</button>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>

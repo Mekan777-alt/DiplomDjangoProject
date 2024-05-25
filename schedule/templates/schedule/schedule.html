@@ -5,105 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание занятий</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 20px;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
 
-    .schedule-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-    }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    .schedule-table th, .schedule-table td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: center;
-        font-size: 16px;
-    }
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+        }
 
-    .schedule-table th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-        color: #333;
-    }
+        .schedule-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .schedule-table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
+        .schedule-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-    .schedule-table tr:hover {
-        background-color: #e9e9e9;
-    }
+        .schedule-table tr:hover {
+            background-color: #e9e9e9;
+        }
 
-    .group-name {
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 10px;
-        font-size: 24px;
-        color: #337ab7;
-    }
+        .group-name {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #337ab7;
+        }
 
+        .logout-button {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            display: block;
+            width: 100px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .sidebar h3 {
-        margin-top: 0;
-    }
+        .logout-button:hover {
+            background-color: #286090;
+        }
 
-    .sidebar p {
-        margin-bottom: 0;
-    }
+        .day__filter {
+            padding: 6px 10px;
+            border: 1px solid #337ab7;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #337ab7;
+            cursor: pointer;
+        }
 
-    .logout-button {
-    background-color: #337ab7;
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-    }
+        .day__filter:hover {
+            background-color: #337ab7;
+            color: #fff;
+        }
 
-    .logout-button:hover {
-    background-color: #337ab7;
-    }
-</style>
+        .days__filter {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0 15px;
+        }
+        
+        .day__filter.active {
+            background-color: #337ab7;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
+    <div class="header">
+        <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
+    </div>
     {% for group, schedule in schedule_data.items %}
-        <div class="group-name">Группа {{ group }}</div>
-        <table class="schedule-table">
-            <thead>
-                <tr>
-                    <th>День недели</th>
-                    <th>№</th>
-                    <th>Время занятий</th>
-                    <th>Наименование дисциплин</th>
-                    <th>Вид занятий</th>
-                    <th>Ф.И.О преподавателя</th>
-                    <th>Место проведение</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for entry in schedule %}
-                <tr>
-                    <td>{{ entry.day_of_week }}</td>
-                    <td>{{ entry.number }}</td>
-                    <td>{{ entry.time_from }} - {{ entry.time_to }}</td>
-                    <td>{{ entry.subject }}</td>
-                    <td>{{ entry.type_of_lesson }}</td>
-                    <td>{{ entry.teacher }}</td>
-                    <td>{{ entry.place_of_perfomance }}</td>
-                </tr>
+    <div class="group-name">Группа {{ group }}</div>
+    <div class="days__filter">
+        {% for day, name in day_names.items %}
+            <button class="day__filter" data-day="{{ day|lower }}">{{ name }}</button>
+        {% endfor %}
+    </div>
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Время занятий</th>
+                <th>Наименование дисциплин</th>
+                <th>Вид занятий</th>
+                <th>Ф.И.О преподавателя</th>
+                <th>Место проведение</th>
+            </tr>
+        </thead>
+        <tbody id="schedule-{{ group }}">
+            {% for day, lessons in schedule.items %}
+                {% for lesson in lessons %}
+                    <tr data-day="{{ day }}">
+                        <td>{{ lesson.number }}</td>
+                        <td>{{ lesson.time_from }} - {{ lesson.time_to }}</td>
+                        <td>{{ lesson.subject }}</td>
+                        <td>{{ lesson.type_of_lesson }}</td>
+                        <td>{{ lesson.teacher }}</td>
+                        <td>{{ lesson.place_of_perfomance }}</td>
+                    </tr>
+                {% endfor %}
             {% endfor %}
-            </tbody>
-        </table>
+        </tbody>
+    </table>
     {% endfor %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var firstButton = document.querySelector('.day__filter');
+            if (firstButton) {
+                firstButton.classList.add('active');
+                firstButton.click();
+            }
+        });
 
+        document.querySelectorAll('.day__filter').forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Удалить класс "active" у всех кнопок
+                document.querySelectorAll('.day__filter').forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                // Добавить класс "active" к текущей кнопке
+                this.classList.add('active');
+
+                var day = this.dataset.day;
+                var groupNameElement = this.closest('.days__filter').previousElementSibling;
+                var group = groupNameElement.textContent.trim().split(' ')[1];
+                var scheduleTable = document.getElementById('schedule-' + group);
+                var rows = scheduleTable.querySelectorAll('tr');
+                rows.forEach(function(row) {
+                    if (row.dataset.day === day) {
+                        row.style.display = 'table-row';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

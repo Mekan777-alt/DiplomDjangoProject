@@ -3,7 +3,6 @@ from authentication.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from authentication.models import Group
-from django.shortcuts import get_object_or_404
 
 
 class UserCreationForm(forms.Form):

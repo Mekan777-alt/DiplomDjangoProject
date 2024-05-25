@@ -8,7 +8,6 @@ class TeacherManager(models.Manager):
         return super().get_queryset().filter(groups__name=Groups.TEACHER.name)
 
     class Meta:
-
         verbose_name_plural = 'Группы студентов'
         verbose_name = 'Группы студентов'
 
@@ -17,7 +16,6 @@ class Subject(models.Model):
     name = models.CharField("Название предмета", max_length=100)
 
     def __str__(self):
-
         return self.name
 
     class Meta:
@@ -26,9 +24,17 @@ class Subject(models.Model):
 
 
 class Schedule(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Название группы")
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Название предмета")
-    day_of_week = models.CharField('День недели', max_length=150)
+    DAYS_OF_WEEK = [
+        ('monday', 'Понедельник'),
+        ('tuesday', 'Вторник'),
+        ('wednesday', 'Среда'),
+        ('thursday', 'Четверг'),
+        ('friday', 'Пятница'),
+        ('saturday', 'Суббота')
+    ]
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Название группы", default=None)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Название предмета", default=None)
+    day_of_week = models.CharField('День недели', choices=DAYS_OF_WEEK, max_length=150)
     number = models.IntegerField("Номер пары")
     time_from = models.TimeField("Начало пары")
     time_to = models.TimeField("Конец пары")
@@ -38,7 +44,6 @@ class Schedule(models.Model):
     place_of_perfomance = models.CharField('Место проведение', max_length=150)
 
     def __str__(self):
-
         return f"{self.type_of_lesson} - {self.subject} - {self.teacher}"
 
     class Meta:
