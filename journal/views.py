@@ -1,7 +1,7 @@
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib.auth.decorators import login_required
-from schedule.models import Subject, Schedule
+from schedule.models import Subject, Schedule, ScheduleType
 from .models import Group, User, Grade
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -9,12 +9,15 @@ from django.contrib import messages
 
 @login_required
 def journal(request):
-    groups = Group.objects.all().distinct()
-    subjects = Subject.objects.all().distinct()
+    current_user = request.user
+
+    groups = Group.objects.filter(schedule__teacher=current_user).distinct()
+    subjects = Subject.objects.filter(schedule__teacher=current_user).distinct()
+    schedule_types = ScheduleType.objects.all()
 
     selected_group_id = request.GET.get('group_id')
     selected_subject_id = request.GET.get('subject_id')
-    selected_lesson_id = request.GET.get('lesson_id')
+    selected_grade_type = request.GET.get('grade_type')
 
     selected_group = None
     selected_subject = None
@@ -28,7 +31,12 @@ def journal(request):
 
         if selected_subject_id:
             selected_subject = get_object_or_404(Subject, id=selected_subject_id)
-            lessons = Schedule.objects.filter(subject=selected_subject, group=selected_group)
+
+            if selected_grade_type:
+                lessons = Schedule.objects.filter(subject=selected_subject, group=selected_group,
+                                                  type_schedule__schedule_type=selected_grade_type)
+
+            selected_lesson_id = request.GET.get('lesson_id')
 
             if selected_lesson_id:
                 selected_lesson = get_object_or_404(Schedule, id=selected_lesson_id)
@@ -41,7 +49,11 @@ def journal(request):
         'selected_group': selected_group,
         'selected_subject': selected_subject,
         'selected_lesson': selected_lesson,
+        'selected_grade_type': selected_grade_type,
+        'schedule_types': schedule_types
     })
+
+
 
 
 @login_required
@@ -73,4 +85,3 @@ def add_mark(request):
         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     else:
         return HttpResponseBadRequest("Invalid request method")
-

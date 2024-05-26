@@ -37,13 +37,15 @@ class Schedule(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Название предмета", default=None)
     day_of_week = models.CharField('День недели', choices=DAYS_OF_WEEK, max_length=150)
     date = models.DateField(default=timezone.now)
-    number = models.IntegerField("Номер пары")
-    time_from = models.TimeField("Начало пары")
-    time_to = models.TimeField("Конец пары")
-    type_of_lesson = models.CharField('Вид занятий', max_length=150)
+    number = models.IntegerField("Номер пары", null=True)
+    time_from = models.TimeField("Начало пары", null=True)
+    time_to = models.TimeField("Конец пары", null=True)
+    type_of_lesson = models.CharField('Вид занятий', max_length=150, null=True)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Преподаватель',
                                 limit_choices_to={'role': Groups.TEACHER.name})
-    place_of_perfomance = models.CharField('Место проведение', max_length=150)
+    place_of_perfomance = models.CharField('Место проведение', max_length=150, null=True)
+    type_schedule = models.ForeignKey('schedule.ScheduleType', on_delete=models.CASCADE,
+                                      verbose_name='Вид рассписания')
 
     def __str__(self):
         return f"{self.type_of_lesson} - {self.subject} - {self.teacher}"
@@ -53,14 +55,18 @@ class Schedule(models.Model):
         verbose_name = 'Расписание студентов'
 
 
-class SessionSchedule(models.Model):
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Преподаватель',
-                                limit_choices_to={'role': Groups.TEACHER.name})
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Название предмета", default=None)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Название группы", default=None)
-    date = models.DateField(default=timezone.now)
-    time = models.TimeField(default=timezone.now)
+class ScheduleType(models.Model):
+    LESSON = 'Урок'
+    SESSION = 'Сессия'
+    TYPE_CHOICES = [
+        (LESSON, 'Урок'),
+        (SESSION, 'Сессия'),
+    ]
+    schedule_type = models.CharField('Тип расписания', max_length=10, choices=TYPE_CHOICES)
 
     class Meta:
-        verbose_name_plural = 'Расписание сессий'
-        verbose_name = 'Расписание сессий'
+        verbose_name_plural = 'Типы расписания'
+        verbose_name = 'Тип расписания'
+
+    def __str__(self):
+        return self.schedule_type

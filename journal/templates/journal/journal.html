@@ -145,6 +145,13 @@
                     <option value="{{ subject.id }}" {% if subject.id == selected_subject.id %}selected{% endif %}>{{ subject.name }}</option>
                     {% endfor %}
                 </select>
+                <label for="grade_type">Выберите тип расписания</label>
+                <select class="form-control" id="grade_type" name="grade_type" onchange="this.form.submit()">
+                    <option value="">--Выберите тип расписания--</option>
+                    {% for schedule_type in schedule_types %}
+                        <option value="{{ schedule_type.schedule_type }}" {% if schedule_type.schedule_type == selected_grade_type %}selected{% endif %}>{{ schedule_type.schedule_type }}</option>
+                    {% endfor %}
+                </select>
                 <label for="lesson">Выберите дату</label>
                 <select class="form-control" name="lesson_id" onchange="this.form.submit()">
                     <option value="">--Выберите дату--</option>
