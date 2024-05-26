@@ -54,6 +54,7 @@
         .grades-button {
             background-color: #337ab7;
             color: #fff;
+            margin-right: 10px;
         }
 
         .grades-button:hover {
@@ -127,6 +128,7 @@
     <div class="header">
         <div class="left-header">
             <a href="" class="grades-button">Просмотреть оценки</a>
+            <a href="{% url 'schedule:session_schedule_view' %}" class="grades-button">Расписание сессии</a>
         </div>
         <div class="right-header">
             <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
