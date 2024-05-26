@@ -168,6 +168,7 @@
             {% csrf_token %}
             <input type="hidden" name="subject_id" value="{{ selected_subject.id }}">
             <input type="hidden" name="lesson_id" value="{{ selected_lesson.id }}">
+            <input type="hidden" name="grade_type" value="{{ selected_grade_type }}">
             <table class="schedule-table">
                 <thead>
                     <tr>

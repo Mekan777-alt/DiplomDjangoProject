@@ -54,34 +54,31 @@ def journal(request):
     })
 
 
-
-
 @login_required
 @require_POST
 def add_mark(request):
-    if request.method == 'POST':
-        student_id = request.POST.get('student_id')
-        subject_id = request.POST.get('subject_id')
-        mark = request.POST.get('mark')
-        subject_date_id = request.POST.get('lesson_id')
-        print(subject_date_id)
-        student = get_object_or_404(User, id=student_id)
-        subject = get_object_or_404(Subject, id=subject_id)
-        subject_date = get_object_or_404(Schedule, id=subject_date_id)
+    subject_id = request.POST.get('subject_id')
+    lesson_id = request.POST.get('lesson_id')
+    grade_type = request.POST.get('grade_type')  # Получаем тип расписания
+    subject = get_object_or_404(Subject, id=subject_id)
+    lesson = get_object_or_404(Schedule, id=lesson_id)
+    teacher = request.user
 
-        teacher = request.user
+    for key, value in request.POST.items():
+        if key.startswith('student_id_'):
+            student_id = value
+            mark_key = 'mark_' + student_id
+            mark = request.POST.get(mark_key)
 
-        grade, created = Grade.objects.update_or_create(
-            student=student,
-            subject=subject,
-            subject_date=subject_date,
-            teacher=teacher,
-            defaults={'mark': mark}
-        )
+            if mark:
+                student = get_object_or_404(User, id=student_id)
+                grade, created = Grade.objects.update_or_create(
+                    student=student,
+                    subject=subject,
+                    subject_date=lesson,
+                    teacher=teacher,
+                    defaults={'mark': mark, 'grade_type': grade_type}
+                )
 
-        success_message = 'Оценка успешно добавлена.' if created else 'Оценка успешно обновлена.'
-        messages.success(request, success_message)
-
-        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
-    else:
-        return HttpResponseBadRequest("Invalid request method")
+    messages.success(request, 'Оценки успешно добавлены/обновлены.')
+    return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
