@@ -1,7 +1,6 @@
 from django.contrib import admin
 from authentication.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib import messages
 
 
 class UserAdmin(BaseUserAdmin):

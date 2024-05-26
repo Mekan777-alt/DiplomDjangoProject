@@ -1,5 +1,5 @@
 from django.contrib import admin
-from schedule.models import Schedule, Group, Subject
+from schedule.models import Schedule, Group, Subject, SessionSchedule
 
 
 @admin.register(Schedule)
@@ -14,4 +14,9 @@ class GroupAdmin(admin.ModelAdmin):
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(SessionSchedule)
+class SessionScheduleAdmin(admin.ModelAdmin):
     pass

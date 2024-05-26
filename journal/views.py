@@ -1,57 +1,76 @@
-from django.shortcuts import render, redirect
-from django.views import View
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from schedule.models import Subject, Schedule
+from .models import Group, User, Grade
+from django.views.decorators.http import require_POST
 from django.contrib import messages
-from .forms import GradeForm, GroupSelectionForm
-from schedule.models import Group, Schedule
-from journal.models import Grade
-from authentication.models import User
 
 
-@method_decorator(login_required, name='dispatch')
-class JournalView(View):
-    template_name = 'journal/journal.html'
+@login_required
+def journal(request):
+    groups = Group.objects.all().distinct()
+    subjects = Subject.objects.all().distinct()
 
-    def get(self, request):
-        teaching_assignment_form = GroupSelectionForm()
-        grade_form = GradeForm(user=request.user)
-        return render(request, self.template_name, {
-            'teaching_assignment_form': teaching_assignment_form,
-            'grade_form': grade_form,
-        })
+    selected_group_id = request.GET.get('group_id')
+    selected_subject_id = request.GET.get('subject_id')
+    selected_lesson_id = request.GET.get('lesson_id')
 
-    def post(self, request):
-        teaching_assignment_form = GroupSelectionForm(request.POST)
-        grade_form = GradeForm(request.POST, user=request.user)
+    selected_group = None
+    selected_subject = None
+    selected_lesson = None
+    students = []
+    lessons = []
 
-        if 'teaching_assignment_submit' in request.POST and teaching_assignment_form.is_valid():
-            teaching_assignment_form.save()
-            messages.success(request, 'Назначение успешно сохранено')
-            return redirect('journal:journal')
+    if selected_group_id:
+        selected_group = get_object_or_404(Group, id=selected_group_id)
+        students = User.objects.filter(student_group=selected_group)
 
-        if 'group_submit' in request.POST and teaching_assignment_form.is_valid():
-            selected_group = teaching_assignment_form.cleaned_data['group']
-            selected_subject = teaching_assignment_form.cleaned_data['subject']
-            students = User.objects.filter(student_group=selected_group, role='STUDENT')
-            lessons = Schedule.objects.filter(group=selected_group, subject=selected_subject)
-            grade_form = GradeForm(user=request.user)
-            grade_form.fields['student'].queryset = students
-            grade_form.fields['lesson'].queryset = lessons
+        if selected_subject_id:
+            selected_subject = get_object_or_404(Subject, id=selected_subject_id)
+            lessons = Schedule.objects.filter(subject=selected_subject, group=selected_group)
 
-            return render(request, self.template_name, {
-                'teaching_assignment_form': teaching_assignment_form,
-                'grade_form': grade_form,
-                'students': students,
-                'lessons': lessons,
-            })
+            if selected_lesson_id:
+                selected_lesson = get_object_or_404(Schedule, id=selected_lesson_id)
 
-        if 'grade_submit' in request.POST and grade_form.is_valid():
-            grade_form.save()
-            messages.success(request, 'Оценка успешно сохранена')
-            return redirect('journal:journal')
+    return render(request, 'journal/journal.html', {
+        'groups': groups,
+        'students': students,
+        'subjects': subjects,
+        'lessons': lessons,
+        'selected_group': selected_group,
+        'selected_subject': selected_subject,
+        'selected_lesson': selected_lesson,
+    })
 
-        return render(request, self.template_name, {
-            'teaching_assignment_form': teaching_assignment_form,
-            'grade_form': grade_form,
-        })
+
+@login_required
+@require_POST
+def add_mark(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        subject_id = request.POST.get('subject_id')
+        mark = request.POST.get('mark')
+        subject_date_id = request.POST.get('lesson_id')
+        print(subject_date_id)
+        student = get_object_or_404(User, id=student_id)
+        subject = get_object_or_404(Subject, id=subject_id)
+        subject_date = get_object_or_404(Schedule, id=subject_date_id)
+
+        teacher = request.user
+
+        grade, created = Grade.objects.update_or_create(
+            student=student,
+            subject=subject,
+            subject_date=subject_date,
+            teacher=teacher,
+            defaults={'mark': mark}
+        )
+
+        success_message = 'Оценка успешно добавлена.' if created else 'Оценка успешно обновлена.'
+        messages.success(request, success_message)
+
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+    else:
+        return HttpResponseBadRequest("Invalid request method")
+

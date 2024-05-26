@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from authentication.models import User, Group
 from authentication.enum import Groups
@@ -35,6 +36,7 @@ class Schedule(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Название группы", default=None)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Название предмета", default=None)
     day_of_week = models.CharField('День недели', choices=DAYS_OF_WEEK, max_length=150)
+    date = models.DateField(default=timezone.now)
     number = models.IntegerField("Номер пары")
     time_from = models.TimeField("Начало пары")
     time_to = models.TimeField("Конец пары")
@@ -49,3 +51,16 @@ class Schedule(models.Model):
     class Meta:
         verbose_name_plural = 'Расписание студентов'
         verbose_name = 'Расписание студентов'
+
+
+class SessionSchedule(models.Model):
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Преподаватель',
+                                limit_choices_to={'role': Groups.TEACHER.name})
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Название предмета", default=None)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Название группы", default=None)
+    date = models.DateField(default=timezone.now)
+    time = models.TimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = 'Расписание сессий'
+        verbose_name = 'Расписание сессий'

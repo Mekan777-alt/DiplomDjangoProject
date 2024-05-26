@@ -4,5 +4,6 @@ from . import views
 app_name = 'journal'
 
 urlpatterns = [
-    path('journal/', views.JournalView.as_view(), name='journal'),
+    path('journal/', views.journal, name='journal'),
+    path('add_mark/', views.add_mark, name='add_mark'),
 ]

@@ -1,10 +1,5 @@
 from django.contrib import admin
-from .models import TeachingAssignment, Grade
-
-
-@admin.register(TeachingAssignment)
-class TeachingAssignmentAdmin(admin.ModelAdmin):
-    pass
+from .models import Grade
 
 
 @admin.register(Grade)

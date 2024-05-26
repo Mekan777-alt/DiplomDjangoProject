@@ -3,44 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Журнал</title>
+    <title>Журнал учёта</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .schedule-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .schedule-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .schedule-table tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        .group-name {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #337ab7;
+        }
+
+        .logout-button {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            display: block;
+            width: 100px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logout-button:hover {
+            background-color: #286090;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            font-weight: bold;
+            color: #337ab7;
+        }
+
+        .username {
+            font-weight: bold;
+            color: #23527c;
+        }
+
+        .logout-button {
+            background-color: #d9534f;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #c9302c;
+        }
+        .form-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .save-button {
+            margin-left: auto;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Журнал</h1>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ group_form.group.label_tag }}
-                {{ group_form.group }}
+        <div class="header">
+            <div class="right-side">
+                <p class="welcome-message">Добро пожаловать, <span class="username">{{ user.get_full_name }}!</span></p>
             </div>
-            <div class="form-group">
-                {{ group_form.subject.label_tag }}
-                {{ group_form.subject }}
+            <div class="left-side">
+                <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
             </div>
-            <button type="submit" name="group_submit" class="btn btn-primary">Выбрать группу и предмет</button>
+        </div>
+
+        {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+
+        <form id="group-form" method="get">
+            <div class="form-group">
+                <label for="group">Выберите группу</label>
+                <select class="form-control" id="group_id" name="group_id" onchange="this.form.submit()">
+                    <option value="">--Выберите группу--</option>
+                    {% for group in groups %}
+                    <option value="{{ group.id }}" {% if group.id == selected_group.id %}selected{% endif %}>{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="subject">Выберите предмет</label>
+                <select class="form-control" id="subject_id" name="subject_id" onchange="this.form.submit()">
+                    <option value="">--Выберите предмет--</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}" {% if subject.id == selected_subject.id %}selected{% endif %}>{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="lesson">Выберите дату</label>
+                <select class="form-control" name="lesson_id" onchange="this.form.submit()">
+                    <option value="">--Выберите дату--</option>
+                    {% for lesson in lessons %}
+                        <option value="{{ lesson.id }}" {% if lesson.id == selected_lesson.id %}selected{% endif %}>{{ lesson.date }} - {{ lesson.type_of_lesson }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </form>
 
-        {% if students and lessons %}
-        <h2>Оценки</h2>
-        <form method="post">
+        {% if selected_group and selected_subject and selected_lesson %}
+        <div class="group-name">Группа {{ selected_group.name }}</div>
+        <form action="{% url 'journal:add_mark' %}" class="form-inline" method="post">
             {% csrf_token %}
-            <div class="form-group">
-                {{ grade_form.student.label_tag }}
-                {{ grade_form.student }}
-            </div>
-            <div class="form-group">
-                {{ grade_form.lesson.label_tag }}
-                {{ grade_form.lesson }}
-            </div>
-            <div class="form-group">
-                {{ grade_form.score.label_tag }}
-                {{ grade_form.score }}
-            </div>
-            <button type="submit" name="grade_submit" class="btn btn-success">Выставить оценку</button>
+            <input type="hidden" name="subject_id" value="{{ selected_subject.id }}">
+            <input type="hidden" name="lesson_id" value="{{ selected_lesson.id }}">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>ФИО студента</th>
+                        <th>Оценка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ student.last_name }} {{ student.first_name }} {{ student.patronymic }}</td>
+                        <td>
+                            <input type="hidden" name="student_id_{{ student.id }}" value="{{ student.id }}">
+                            <input type="text" name="mark_{{ student.id }}" placeholder="Оценка" class="form-control" style="width: 100px;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary save-button">Сохранить</button>
         </form>
         {% endif %}
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
