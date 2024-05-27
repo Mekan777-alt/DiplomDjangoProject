@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +18,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            background-color: #337ab7;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
         }
 
         .left-header {
@@ -29,7 +33,12 @@
         .right-header {
             display: flex;
             justify-content: flex-end;
+        }
+
+        .header a, .header button {
+            text-decoration: none;
             color: #fff;
+            margin-right: 10px;
         }
 
         .logout-button, .grades-button {
@@ -39,27 +48,44 @@
             text-decoration: none;
             font-size: 16px;
             border-radius: 5px;
-            text-align: center;
+            border: none;
+            cursor: pointer;
         }
 
-        .logout-button {
+        .logout-button:hover, .grades-button:hover {
             background-color: #c9302c;
-        }
-
-        .logout-button:hover {
-            background-color: #c9302c;
-            color: #fff;
         }
 
         .grades-button {
-            background-color: #337ab7;
-            color: #fff;
-            margin-right: 10px;
+            background-color: #5bc0de;
         }
 
         .grades-button:hover {
+            background-color: #31b0d5;
+        }
+
+        .semester-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .semester-button {
             background-color: #337ab7;
             color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .semester-button:hover {
+            background-color: #286090;
         }
 
         .schedule-table {
@@ -67,6 +93,7 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
         }
 
         .schedule-table th, .schedule-table td {
@@ -77,9 +104,9 @@
         }
 
         .schedule-table th {
-            background-color: #f2f2f2;
+            background-color: #337ab7;
             font-weight: bold;
-            color: #333;
+            color: #fff;
         }
 
         .schedule-table tr:nth-child(even) {
@@ -100,11 +127,17 @@
             <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
         </div>
     </div>
+
     <h1>Расписание сессии</h1>
+    <div class="semester-buttons">
+        {% for key, value in day_names.items %}
+            <button class="semester-button" onclick="filterBySemester('{{ key }}')">{{ value }}</button>
+        {% endfor %}
+    </div>
     <table class="schedule-table">
         <thead>
             <tr>
-                <th>Группа</th>
+                <th>Тип сдачи</th>
                 <th>День недели</th>
                 <th>Время</th>
                 <th>Предмет</th>
@@ -115,7 +148,7 @@
         <tbody>
             {% for session in session_schedule %}
             <tr>
-                <td>{{ session.group }}</td>
+                <td>{{ session.type_of_lesson }}</td>
                 <td>{{ session.get_day_of_week_display }}</td>
                 <td>{{ session.time_from }} - {{ session.time_to }}</td>
                 <td>{{ session.subject }}</td>
@@ -125,5 +158,13 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        function filterBySemester(semester) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('semester', semester);
+            window.location.href = url.toString();
+        }
+    </script>
 </body>
 </html>

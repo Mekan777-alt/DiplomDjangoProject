@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from authentication.forms import UserCreationForm
@@ -14,11 +15,11 @@ def register(request):
             try:
                 form.save()
                 messages.success(request, 'Регистрация прошла успешно. Теперь вы можете войти!')
-                return redirect(reverse('authentication:login'))
+                return JsonResponse({'success': True})
             except IntegrityError as e:
-                messages.error(request, "Электронная почта уже зарегистрирована.")
+                return JsonResponse({'success': False, 'error': "Электронная почта уже зарегистрирована."})
         else:
-            messages.error(request, 'Ошибка при регистрации. Пожалуйста, исправьте ошибки в форме.')
+            return JsonResponse({'success': False, 'error': 'Ошибка при регистрации. Пожалуйста, исправьте ошибки в форме.'})
     else:
         form = UserCreationForm()
     return render(request, 'auth/register.html', {'form': form})
@@ -31,10 +32,10 @@ def login_view(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            if user.role == Groups.TEACHER.name:  # Проверка роли преподавателя
+            if user.role == Groups.TEACHER.name:
                 return redirect(reverse('journal:journal'))
             else:
-                return redirect(reverse('schedule:schedule'))  # Перенаправление на расписание для студентов
+                return redirect(reverse('schedule:schedule'))
         else:
             messages.error(request, "Неверный адрес электронной почты или пароль")
     return render(request, 'auth/login.html')

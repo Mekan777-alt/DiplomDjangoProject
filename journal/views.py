@@ -1,8 +1,8 @@
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect, reverse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from schedule.models import Subject, Schedule, ScheduleType
 from .models import Group, User, Grade
+from schedule.models import Session
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 
@@ -82,3 +82,38 @@ def add_mark(request):
 
     messages.success(request, 'Оценки успешно добавлены/обновлены.')
     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+
+
+@login_required
+def grades_view(request):
+    student = get_object_or_404(User, id=request.user.id)
+
+    grades = Grade.objects.filter(student=student)
+    all_sessions = Session.objects.all().order_by('session_number')
+
+    semester_grades = {session.session_number: [] for session in all_sessions}
+    for grade in grades:
+        semester = grade.subject_date.session_number_id
+        schedule = Schedule.objects.filter(subject=grade.subject).first()
+        type_of_lesson = schedule.type_of_lesson if schedule else 'N/A'
+        teacher_name = schedule.teacher.get_full_name() if schedule and schedule.teacher else 'N/A'
+        if semester in semester_grades:
+            semester_grades[semester].append({
+                'subject': grade.subject.name,
+                'mark': grade.mark,
+                'grade_type': type_of_lesson,
+                'teacher': teacher_name
+            })
+
+    active_semester = request.GET.get('semester')
+    if not active_semester and all_sessions.exists():
+        active_semester = all_sessions.first().session_number
+    active_grades = semester_grades.get(int(active_semester), []) if active_semester else []
+
+    context = {
+        'semester_grades': semester_grades,
+        'active_semester': active_semester,
+        'active_grades': active_grades,
+    }
+
+    return render(request, 'journal/grade.html', context)

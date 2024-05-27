@@ -46,6 +46,8 @@ class Schedule(models.Model):
     place_of_perfomance = models.CharField('Место проведение', max_length=150, null=True)
     type_schedule = models.ForeignKey('schedule.ScheduleType', on_delete=models.CASCADE,
                                       verbose_name='Вид рассписания')
+    session_number = models.ForeignKey('schedule.Session', on_delete=models.CASCADE, verbose_name='Номер сессии',
+                                       default=None)
 
     def __str__(self):
         return f"{self.type_of_lesson} - {self.subject} - {self.teacher}"
@@ -56,10 +58,10 @@ class Schedule(models.Model):
 
 
 class ScheduleType(models.Model):
-    LESSON = 'Урок'
+    LESSON = 'Предмет'
     SESSION = 'Сессия'
     TYPE_CHOICES = [
-        (LESSON, 'Урок'),
+        (LESSON, 'Предмет'),
         (SESSION, 'Сессия'),
     ]
     schedule_type = models.CharField('Тип расписания', max_length=10, choices=TYPE_CHOICES)
@@ -70,3 +72,26 @@ class ScheduleType(models.Model):
 
     def __str__(self):
         return self.schedule_type
+
+
+class Session(models.Model):
+    TYPE_CHOICES = [
+        (1, 'Первый семестр'),
+        (2, 'Второй семестр'),
+        (3, 'Третий семестр'),
+        (4, 'Четвертый семестр'),
+        (5, 'Пятый семестр'),
+        (6, 'Шестой семестр'),
+        (7, 'Седьмой семестр'),
+        (8, 'Восьмой семестр')
+    ]
+
+    session_number = models.IntegerField('Номер сессии', choices=TYPE_CHOICES, max_length=10, unique=True)
+
+    def __str__(self):
+        return f"{self.session_number} - семестр"
+
+    class Meta:
+        verbose_name_plural = 'Сессия'
+        verbose_name = 'Сессия'
+

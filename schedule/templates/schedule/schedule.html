@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +18,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            background-color: #337ab7;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
         }
 
         .left-header {
@@ -29,7 +33,12 @@
         .right-header {
             display: flex;
             justify-content: flex-end;
+        }
+
+        .header a, .header button {
+            text-decoration: none;
             color: #fff;
+            margin-right: 10px;
         }
 
         .logout-button, .grades-button {
@@ -39,27 +48,20 @@
             text-decoration: none;
             font-size: 16px;
             border-radius: 5px;
-            text-align: center;
+            border: none;
+            cursor: pointer;
         }
 
-        .logout-button {
+        .logout-button:hover, .grades-button:hover {
             background-color: #c9302c;
-        }
-
-        .logout-button:hover {
-            background-color: #c9302c;
-            color: #fff;
         }
 
         .grades-button {
-            background-color: #337ab7;
-            color: #fff;
-            margin-right: 10px;
+            background-color: #5bc0de;
         }
 
         .grades-button:hover {
-            background-color: #337ab7;
-            color: #fff;
+            background-color: #31b0d5;
         }
 
         .schedule-table {
@@ -67,6 +69,7 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
         }
 
         .schedule-table th, .schedule-table td {
@@ -77,9 +80,9 @@
         }
 
         .schedule-table th {
-            background-color: #f2f2f2;
+            background-color: #337ab7;
             font-weight: bold;
-            color: #333;
+            color: #fff;
         }
 
         .schedule-table tr:nth-child(even) {
@@ -105,6 +108,8 @@
             background-color: #fff;
             color: #337ab7;
             cursor: pointer;
+            margin-right: 10px;
+            font-size: 16px;
         }
 
         .day__filter:hover {
@@ -114,28 +119,31 @@
 
         .days__filter {
             display: flex;
-            justify-content: space-between;
-            margin: 15px 0 15px;
+            justify-content: center;
+            margin: 15px 0;
         }
 
         .day__filter.active {
             background-color: #337ab7;
             color: #fff;
         }
+
     </style>
 </head>
 <body>
     <div class="header">
         <div class="left-header">
-            <a href="" class="grades-button">Просмотреть оценки</a>
-            <a href="{% url 'schedule:session_schedule_view' %}" class="grades-button">Расписание сессии</a>
+            <button onclick="window.location.href='{% url 'schedule:schedule' %}'" class="grades-button">Просмотреть расписание</button>
+            <button onclick="window.location.href='{% url 'journal:view_grades' %}'" class="grades-button">Просмотреть оценки</button>
+            <button onclick="window.location.href='{% url 'schedule:session_schedule_view' %}'" class="grades-button">Расписание сессии</button>
         </div>
         <div class="right-header">
             <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
         </div>
     </div>
+
     {% for group, schedule in schedule_data.items %}
-    <div class="group-name">Группа {{ group }}</div>
+    <div class="group-name">{{ user.get_full_name }}</div>
     <div class="days__filter">
         {% for day, name in day_names.items %}
             <button class="day__filter" data-day="{{ day|lower }}">{{ name }}</button>
@@ -149,57 +157,54 @@
                 <th>Наименование дисциплин</th>
                 <th>Вид занятий</th>
                 <th>Ф.И.О преподавателя</th>
-                <th>Место проведение</th>
+                <th>Место проведения</th>
             </tr>
         </thead>
         <tbody id="schedule-{{ group }}">
             {% for day, lessons in schedule.items %}
                 {% for lesson in lessons %}
-                    <tr data-day="{{ day }}">
+                    <tr data-day="{{ day|lower }}">
                         <td>{{ lesson.number }}</td>
                         <td>{{ lesson.time_from }} - {{ lesson.time_to }}</td>
                         <td>{{ lesson.subject }}</td>
                         <td>{{ lesson.type_of_lesson }}</td>
                         <td>{{ lesson.teacher }}</td>
-                        <td>{{ lesson.place_of_perfomance }}</td>
+                        <td>{{ lesson.place_of_performance }}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}
         </tbody>
     </table>
     {% endfor %}
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var firstButton = document.querySelector('.day__filter');
             if (firstButton) {
                 firstButton.classList.add('active');
-                firstButton.click();
+                filterLessonsByDay(firstButton.dataset.day);
             }
         });
 
         document.querySelectorAll('.day__filter').forEach(function(button) {
             button.addEventListener('click', function() {
-                // Удалить класс "active" у всех кнопок
                 document.querySelectorAll('.day__filter').forEach(function(btn) {
                     btn.classList.remove('active');
                 });
-                // Добавить класс "active" к текущей кнопке
                 this.classList.add('active');
-
-                var day = this.dataset.day;
-                var groupNameElement = this.closest('.days__filter').previousElementSibling;
-                var group = groupNameElement.textContent.trim().split(' ')[1];
-                var scheduleTable = document.getElementById('schedule-' + group);
-                var rows = scheduleTable.querySelectorAll('tr');
-                rows.forEach(function(row) {
-                    if (row.dataset.day === day) {
-                        row.style.display = 'table-row';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+                filterLessonsByDay(this.dataset.day);
             });
         });
+
+        function filterLessonsByDay(day) {
+            document.querySelectorAll('tbody tr').forEach(function(row) {
+                if (row.dataset.day === day) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оценки за семестр и предметы</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+{#    <link rel="stylesheet" href="{% static 'css/style.css' %}">#}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #337ab7;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .left-header {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .right-header {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .header a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .logout-button, .grades-button {
+            background-color: #d9534f;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            text-align: center;
+            margin-right: 10px;
+            border: none;
+        }
+
+        .logout-button:hover, .grades-button:hover {
+            background-color: #c9302c;
+        }
+
+        .grades-button {
+            background-color: #5bc0de;
+        }
+
+        .grades-button:hover {
+            background-color: #31b0d5;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .grades-table th, .grades-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .grades-table th {
+            background-color: #337ab7;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .grades-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .grades-table tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        .semester-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .semester-button {
+            margin-right: 10px;
+            padding: 10px 20px;
+            background-color: #337ab7;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .semester-button.active {
+            background-color: #23527c;
+        }
+
+        .semester-button:hover {
+            background-color: #286090;
+        }
+
+        .no-grades {
+            text-align: center;
+            font-size: 16px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="left-header">
+            <a href="{% url 'schedule:schedule' %}" class="grades-button">Просмотреть расписание</a>
+        </div>
+        <div class="right-header">
+            <a href="{% url 'authentication:logout' %}" class="logout-button">Выйти</a>
+        </div>
+    </div>
+    <h1 style="margin-bottom: 20px;">Оценки за семестр и предметы</h1>
+    <div class="semester-buttons">
+        {% for semester in semester_grades.keys %}
+            <button class="semester-button {% if semester|stringformat:"d" == active_semester %}active{% endif %}" onclick="filterBySemester('{{ semester }}')">{{ semester }} семестр</button>
+        {% endfor %}
+    </div>
+
+    <div class="tab-content">
+        {% for semester, grades in semester_grades.items %}
+        <div class="tab-pane fade {% if semester|stringformat:"d" == active_semester %}show active{% endif %}" id="semester-{{ semester }}">
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Предмет</th>
+                        <th>Оценка</th>
+                        <th>Тип оценки</th>
+                        <th>Преподаватель</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if grades %}
+                        {% for grade in grades %}
+                        <tr>
+                            <td>{{ grade.subject }}</td>
+                            <td>{{ grade.mark }}</td>
+                            <td>{{ grade.grade_type }}</td>
+                            <td>{{ grade.teacher }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="no-grades">Нет оценок для этого семестра</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function filterBySemester(semester) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('semester', semester);
+            window.location.search = params.toString();
+        }
+    </script>
+</body>
+</html>

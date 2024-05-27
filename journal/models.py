@@ -23,6 +23,4 @@ class Grade(models.Model):
         verbose_name = 'Оценка'
         verbose_name_plural = 'Оценки'
 
-    def __str__(self):
-        return f"{self.student} - {self.mark}"
 
